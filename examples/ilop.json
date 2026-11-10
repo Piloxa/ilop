@@ -1,0 +1,23 @@
+{
+  "ilop_version": "0.1",
+  "provider": { "name": "Piloxa", "url": "https://piloxa.com", "operator": "Decentralized Publishing LLC" },
+  "mcp": { "url": "https://piloxa.com/mcp", "auth": "none" },
+  "actions": [
+    {
+      "id": "mail.certified.us",
+      "title": "USPS Certified Mail letter",
+      "region": "US",
+      "options": ["CERTIFIED", "CERTIFIED_ERR", "CERTIFIED_EVIDENCE", "CERTIFIED_DEADLINE"],
+      "proof_types": ["carrier_tracking", "carrier_scan", "return_receipt", "certificate_of_mailing", "document_hash"]
+    }
+  ],
+  "tools": {
+    "quote": "quote_certified_letter",
+    "check": "check_certified_letter",
+    "prepare": "prepare_certified_letter",
+    "authorize": "authorize_certified_letter",
+    "status": "get_certified_letter_status"
+  },
+  "approval": { "hosted_page": true, "in_chat": ["stripe_shared_payment_token"] },
+  "verify_url": "https://piloxa.com/v/"
+}

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ILOP — Intent Logistics Orders Protocol</title>
+<meta name="description" content="ILOP is an open standard, built on MCP, for how AI agents turn a person's intent into a completed real-world order and prove it was done.">
+<style>
+:root{--bg:#fbfaf7;--fg:#1b1d22;--muted:#5d6370;--line:#e3e0d8;--card:#ffffff;--accent:#1f5f8b;--code:#f2efe8}
+@media (prefers-color-scheme:dark){:root{--bg:#121417;--fg:#e9e7e2;--muted:#a3a8b2;--line:#2a2e35;--card:#191c21;--accent:#7cb8e4;--code:#1f2329}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:860px;margin:0 auto;padding:56px 16px 72px}
+h1{font-size:clamp(2rem,5vw,3rem);line-height:1.1;margin:0 0 8px;letter-spacing:-.02em}
+h2{font-size:1.3rem;margin:48px 0 12px}
+.tag{color:var(--muted);font-size:1.15rem;margin:0 0 24px}
+.status{display:inline-block;font-size:.8rem;border:1px solid var(--line);border-radius:999px;padding:2px 10px;color:var(--muted);margin-bottom:20px}
+a{color:var(--accent)}
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin:24px 0}
+.btn{display:inline-block;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;border:1px solid var(--accent)}
+.btn.primary{background:var(--accent);color:var(--bg)}
+ol.steps{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+ol.steps li{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;counter-increment:s}
+ol.steps li::before{content:counter(s);display:block;font-weight:700;color:var(--accent)}
+ol.steps b{display:block}
+ul.promises li{margin:6px 0}
+pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:14px;overflow-x:auto;font-size:.85rem;line-height:1.45}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+td,th{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+footer{margin-top:56px;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);padding-top:16px}
+</style>
+</head>
+<body>
+<main>
+<span class="status">Draft v0.1 · November 2026</span>
+<h1>ILOP</h1>
+<p class="tag"><b>Intent Logistics Orders Protocol.</b> An open standard for how AI agents turn a person's intent into a completed real-world order, and prove it was done.</p>
+<p>ILOP sits on top of <a href="https://modelcontextprotocol.io">MCP</a>. MCP defines how an assistant talks to a service. ILOP defines what a trustworthy real-world order looks like once it does.</p>
+<div class="btns">
+<a class="btn primary" href="https://github.com/Piloxa/ilop/blob/main/SPEC.md">Read the spec</a>
+<a class="btn" href="https://github.com/Piloxa/ilop">GitHub</a>
+<a class="btn" href="https://piloxa.com">Reference implementation</a>
+</div>
+
+<h2>Six steps, every order</h2>
+<ol class="steps">
+<li><b>Quote</b>The exact all-in price, before anything exists.</li>
+<li><b>Prepare</b>The order is written up and checked; the person gets a link to read exactly what will be done.</li>
+<li><b>Approve and pay</b>The person says yes to that exact total, on the link or in the chat.</li>
+<li><b>Carry out</b>The job goes to the partner who does the physical work. The card is charged only when they accept it.</li>
+<li><b>Track</b>One small set of plain status words, from Quoted to Completed.</li>
+<li><b>Prove and repeat</b>Proof a third party can check, and the obvious next step in one click.</li>
+</ol>
+
+<h2>The promises every ILOP provider makes</h2>
+<ul class="promises">
+<li>Nothing is done or charged without the person's explicit yes to the exact total.</li>
+<li>A changed price, document or destination cancels that yes.</li>
+<li>Retrying never charges twice.</li>
+<li>Nobody says "sent" or "done" before the fulfillment partner has accepted the job.</li>
+<li>Every answer says plainly whether money was taken and whether the work happened.</li>
+</ul>
+
+<h2>How an agent finds a provider</h2>
+<p>Each provider publishes <code>/.well-known/ilop.json</code>, naming its actions, its MCP endpoint, the tools for each step and the kinds of proof it issues.</p>
+<pre>{
+  "ilop_version": "0.1",
+  "provider": { "name": "Piloxa", "url": "https://piloxa.com" },
+  "mcp": { "url": "https://piloxa.com/mcp", "auth": "none" },
+  "actions": [{ "id": "mail.certified.us",
+    "proof_types": ["carrier_tracking", "return_receipt", "document_hash"] }],
+  "tools": { "quote": "quote_certified_letter",
+             "prepare": "prepare_certified_letter",
+             "authorize": "authorize_certified_letter",
+             "status": "get_certified_letter_status" }
+}</pre>
+
+<h2>What ILOP is not</h2>
+<p>ILOP does not define payments. It works with whichever agent-payment method the assistant supports, or with a provider-hosted approval page. It standardizes the part payment protocols leave out: carrying out a real-world service and proving it happened.</p>
+
+<h2>Implementations</h2>
+<table>
+<tr><th>Provider</th><th>Action</th><th>Status</th></tr>
+<tr><td><a href="https://piloxa.com">Piloxa</a></td><td>USPS Certified Mail, U.S.</td><td>Reference implementation</td></tr>
+</table>
+<p>Building one? <a href="https://github.com/Piloxa/ilop/issues">Open an issue</a> to be listed.</p>
+
+<footer>Specification text CC BY 4.0; schemas and examples Apache 2.0. Maintained by Decentralized Publishing LLC.</footer>
+</main>
+</body>
+</html>
