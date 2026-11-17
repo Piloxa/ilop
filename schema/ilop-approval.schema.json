@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ilop.ai/schema/ilop-approval.schema.json",
+  "title": "ILOP v0.2 Approval record (what the provider stores; never sufficient when sent by an agent alone)",
+  "type": "object",
+  "required": ["channel", "approved_total_cents", "currency", "content_sha256", "destination_digest", "service", "approved_at", "approver"],
+  "properties": {
+    "channel": { "enum": ["hosted_page", "in_chat"] },
+    "approved_total_cents": { "$ref": "ilop-common.schema.json#/$defs/minorUnits" },
+    "currency": { "$ref": "ilop-common.schema.json#/$defs/currency" },
+    "content_sha256": { "$ref": "ilop-common.schema.json#/$defs/sha256" },
+    "destination_digest": { "type": "string", "minLength": 16 },
+    "service": { "type": "string" },
+    "order_version": { "type": "integer", "minimum": 1 },
+    "quote_id": { "type": "string" },
+    "approved_at": { "$ref": "ilop-common.schema.json#/$defs/timestamp" },
+    "approval_statement": { "type": "string" },
+    "approver": {
+      "type": "object",
+      "required": ["authenticated_by"],
+      "properties": {
+        "authenticated_by": { "enum": ["provider_email_verification", "provider_account_sign_in", "host_payment_credential"], "description": "How the PROVIDER established the person, independently of the agent. An agent's user_approved flag is not one of these." },
+        "subject_ref": { "type": "string" }
+      }
+    },
+    "payment_method": { "enum": ["card", "stripe_shared_payment_token", "acp", "ap2"] }
+  }
+}

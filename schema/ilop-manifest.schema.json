@@ -1,28 +1,30 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ilop.ai/schema/ilop-manifest.schema.json",
-  "title": "ILOP discovery file (/.well-known/ilop.json), v0.1",
+  "title": "ILOP discovery file (/.well-known/ilop.json), v0.1 and v0.2",
   "type": "object",
   "required": ["ilop_version", "provider", "mcp", "actions", "tools", "approval"],
   "properties": {
-    "ilop_version": { "type": "string", "pattern": "^0\\.1$" },
+    "ilop_version": { "enum": ["0.1", "0.2"] },
+    "$schema": { "type": "string", "format": "uri" },
+    "spec_url": { "type": "string", "format": "uri" },
     "provider": {
       "type": "object",
       "required": ["name", "url"],
-      "properties": {
-        "name": { "type": "string" },
-        "url": { "type": "string", "format": "uri" },
-        "operator": { "type": "string" }
-      }
+      "properties": { "name": { "type": "string" }, "url": { "type": "string", "format": "uri" }, "operator": { "type": "string" } }
     },
     "mcp": {
       "type": "object",
       "required": ["url"],
       "properties": {
         "url": { "type": "string", "format": "uri" },
-        "auth": { "type": "string", "enum": ["none", "oauth"] }
+        "auth": { "enum": ["none", "oauth"] },
+        "transport": { "enum": ["streamable-http"] },
+        "protocol_versions": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" } },
+        "legacy_session_header": { "type": ["string", "null"] }
       }
     },
+    "service_areas": { "type": "array", "items": { "type": "object", "required": ["country"], "properties": { "country": { "type": "string", "pattern": "^[A-Z]{2}$" }, "regions": { "type": "array", "items": { "type": "string" } } } } },
     "actions": {
       "type": "array",
       "minItems": 1,
@@ -33,31 +35,78 @@
           "id": { "type": "string", "pattern": "^[a-z0-9]+(\\.[a-z0-9_]+)+$" },
           "title": { "type": "string" },
           "region": { "type": "string" },
+          "destination_countries": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{2}$" } },
           "options": { "type": "array", "items": { "type": "string" } },
-          "proof_types": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+          "max_pages": { "type": "integer", "minimum": 1 },
+          "proof_types": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "approval_mode": { "enum": ["provider_hosted", "in_chat", "provider_hosted_or_in_chat"] },
+          "human_approval_required": { "type": "boolean" },
+          "autonomous_execution": { "const": false },
+          "pricing": { "type": "object", "properties": { "mode": { "enum": ["dynamic"] }, "quote_operation": { "type": "string" }, "binding": { "type": "string" } } }
         }
       }
     },
     "tools": {
       "type": "object",
       "required": ["quote", "prepare", "status"],
-      "properties": {
-        "quote": { "type": "string" },
-        "check": { "type": "string" },
-        "prepare": { "type": "string" },
-        "authorize": { "type": "string" },
-        "status": { "type": "string" }
-      },
+      "properties": { "quote": { "type": "string" }, "check": { "type": "string" }, "prepare": { "type": "string" }, "authorize": { "type": "string" }, "status": { "type": "string" }, "proof": { "type": "string" } },
       "additionalProperties": false
+    },
+    "tool_annotations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["readOnlyHint"],
+        "properties": { "readOnlyHint": { "type": "boolean" }, "destructiveHint": { "type": "boolean" }, "idempotentHint": { "type": "boolean" }, "openWorldHint": { "type": "boolean" } }
+      }
     },
     "approval": {
       "type": "object",
       "required": ["hosted_page"],
       "properties": {
         "hosted_page": { "type": "boolean" },
-        "in_chat": { "type": "array", "items": { "type": "string", "enum": ["acp", "ap2", "stripe_shared_payment_token"] } }
+        "in_chat": { "type": "array", "items": { "enum": ["acp", "ap2", "stripe_shared_payment_token"] } }
       }
     },
-    "verify_url": { "type": "string", "format": "uri" }
-  }
+    "access": { "type": "object", "properties": { "full_address_in_status": { "const": false } } },
+    "features": {
+      "type": "object",
+      "properties": {
+        "hosted_approval": { "type": "boolean" },
+        "in_chat_authorization": {
+          "type": "object", "required": ["listed"],
+          "properties": { "listed": { "type": "boolean" }, "conditions": { "type": "array", "items": { "type": "string" } }, "verified_issuing_hosts": { "type": "array", "items": { "type": "string" } } }
+        },
+        "cross_session_status": { "type": "boolean" },
+        "status_handles": { "type": "boolean" },
+        "signed_evidence": { "type": ["string", "boolean"] },
+        "next_actions": { "type": "boolean" }
+      }
+    },
+    "policy": { "type": "object", "properties": { "autonomous_charge": { "const": false }, "autonomous_mailing": { "const": false }, "charge_timing": { "type": "string" } } },
+    "verify_url": { "type": "string", "format": "uri" },
+    "capability_revision": { "type": "string", "pattern": "^[a-f0-9]{8,64}$" },
+    "last_updated": { "type": ["string", "null"] }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "ilop_version": { "const": "0.2" } } },
+      "then": {
+        "required": ["spec_url", "tool_annotations", "features", "capability_revision"],
+        "properties": {
+          "mcp": { "required": ["url", "protocol_versions"] },
+          "tool_annotations": { "description": "Every read-only operation MUST be annotated readOnlyHint true." }
+        }
+      }
+    },
+    {
+      "description": "In-chat payment may be advertised only while the authorize operation is mapped.",
+      "if": { "properties": { "approval": { "properties": { "in_chat": { "minItems": 1 } }, "required": ["in_chat"] } }, "required": ["approval"] },
+      "then": { "properties": { "tools": { "required": ["authorize"] } } }
+    },
+    {
+      "if": { "required": ["tools", "ilop_version"], "properties": { "ilop_version": { "const": "0.2" }, "tools": { "required": ["authorize"] } } },
+      "then": { "properties": { "features": { "required": ["in_chat_authorization"], "properties": { "in_chat_authorization": { "properties": { "listed": { "const": true } }, "required": ["conditions"] } } } } }
+    }
+  ]
 }

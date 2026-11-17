@@ -1,0 +1,37 @@
+{
+  "ilop_version": "0.2",
+  "operation": "prepare",
+  "action": "mail.certified.us",
+  "order_id": "draft_EXAMPLE0001",
+  "ilop_state": "PREPARED",
+  "provider_state": "PREPARED",
+  "state_meaning": "The letter exists as an unsent draft, but something is still missing. Nothing was charged or mailed.",
+  "charged": false,
+  "executed": false,
+  "payment_status": "NOT_CHARGED",
+  "fulfillment_status": "NOT_SUBMITTED",
+  "requires_human_approval": true,
+  "approval_mode": "provider_hosted",
+  "approval_url": "https://piloxa.com/?a=EXAMPLE-REVIEW-TOKEN&d=draft_EXAMPLE0001",
+  "quote": {
+    "currency": "USD",
+    "total_cents": 1400,
+    "valid_until": "2026-11-17T16:00:00.000Z",
+    "binding": "payable total until valid_until"
+  },
+  "events": [],
+  "evidence": [
+    {
+      "type": "document_hash",
+      "claim": "prepared_document_digest",
+      "issuer": "Piloxa",
+      "status": "RECORDED",
+      "value": "074f5b56c51ff27ed8637db44fcd6881fd99b8318d9c83f1f520b9248491c4e2",
+      "source": {
+        "system": "provider",
+        "third_party_authenticated": false
+      }
+    }
+  ],
+  "observed_at": "2026-11-17T16:00:00.000Z"
+}

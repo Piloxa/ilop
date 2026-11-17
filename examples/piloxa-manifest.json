@@ -1,0 +1,134 @@
+{
+  "ilop_version": "0.2",
+  "$schema": "https://ilop.ai/schema/ilop-manifest.schema.json",
+  "spec_url": "https://ilop.ai/SPEC.md",
+  "provider": {
+    "name": "Piloxa",
+    "url": "https://piloxa.com",
+    "operator": "Decentralized Publishing LLC"
+  },
+  "mcp": {
+    "url": "https://piloxa.com/mcp",
+    "auth": "none",
+    "transport": "streamable-http",
+    "protocol_versions": [
+      "2026-07-28",
+      "2025-06-18",
+      "2025-03-26",
+      "2024-11-05"
+    ],
+    "legacy_session_header": "Mcp-Session-Id"
+  },
+  "service_areas": [
+    {
+      "country": "US"
+    }
+  ],
+  "actions": [
+    {
+      "id": "mail.certified.us",
+      "title": "USPS Certified Mail letter",
+      "region": "US",
+      "destination_countries": [
+        "US"
+      ],
+      "options": [
+        "CERTIFIED",
+        "CERTIFIED_ERR",
+        "CERTIFIED_EVIDENCE",
+        "CERTIFIED_DEADLINE"
+      ],
+      "proof_types": [
+        "document_hash",
+        "carrier_tracking",
+        "return_receipt",
+        "certificate_of_mailing"
+      ],
+      "approval_mode": "provider_hosted",
+      "human_approval_required": true,
+      "autonomous_execution": false,
+      "pricing": {
+        "mode": "dynamic",
+        "quote_operation": "quote",
+        "binding": "the total shown on approval_url at checkout"
+      }
+    }
+  ],
+  "tools": {
+    "check": "check_certified_letter",
+    "quote": "quote_certified_letter",
+    "prepare": "prepare_certified_letter",
+    "authorize": "authorize_certified_letter",
+    "status": "get_certified_letter_status"
+  },
+  "tool_annotations": {
+    "check_certified_letter": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "quote_certified_letter": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "prepare_certified_letter": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
+    },
+    "authorize_certified_letter": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": true
+    },
+    "get_certified_letter_status": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  "approval": {
+    "hosted_page": true,
+    "in_chat": [
+      "stripe_shared_payment_token"
+    ]
+  },
+  "access": {
+    "quote": "anonymous",
+    "check": "anonymous",
+    "prepare": "anonymous_unsent_draft",
+    "status": "same_conversation_or_status_handle",
+    "history": "signed_in_at_provider_website",
+    "full_address_in_status": false
+  },
+  "features": {
+    "hosted_approval": true,
+    "in_chat_authorization": {
+      "listed": true,
+      "conditions": [
+        "the host platform issued a Stripe shared payment token to Piloxa for the exact total",
+        "the person said yes to that exact total, recipient and service",
+        "an idempotency_key reused on every retry"
+      ],
+      "verified_issuing_hosts": []
+    },
+    "cross_session_status": false,
+    "status_handles": true,
+    "signed_evidence": "daily_signed_proof_log",
+    "next_actions": false
+  },
+  "verify_url": "https://piloxa.com/v/",
+  "policy": {
+    "charge_timing": "card held at approval, captured only after the print and mail partner accepts the job; released if the partner refuses",
+    "autonomous_charge": false,
+    "autonomous_mailing": false
+  },
+  "last_updated": "2026-11-17",
+  "capability_revision": "fc96de98d079dfbf"
+}

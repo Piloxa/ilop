@@ -1,0 +1,21 @@
+{
+  "ilop_version": "0.2",
+  "operation": "authorize",
+  "action": "mail.certified.us",
+  "order_id": "draft_EXAMPLE0001",
+  "provider_reference": "act_EXAMPLE0001",
+  "ilop_state": "ACCEPTED",
+  "provider_state": "VENDOR_ACCEPTED",
+  "state_meaning": "The print and mail partner accepted the job. USPS handoff is not yet confirmed.",
+  "charged": true,
+  "executed": false,
+  "payment_status": "CAPTURED",
+  "fulfillment_status": "PARTNER_ACCEPTED",
+  "requires_human_approval": true,
+  "approval_mode": "in_chat",
+  "approval_url": "https://piloxa.com/?a=EXAMPLE-REVIEW-TOKEN&d=draft_EXAMPLE0001",
+  "events": [],
+  "evidence": [],
+  "observed_at": "2026-11-17T16:00:00.000Z",
+  "replayed": true
+}

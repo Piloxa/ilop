@@ -1,0 +1,29 @@
+{
+  "ilop_version": "0.2",
+  "operation": "authorize",
+  "action": "mail.certified.us",
+  "order_id": "draft_EXAMPLE0001",
+  "ilop_state": "FAILED",
+  "provider_state": "FAILED",
+  "state_meaning": "Nothing was mailed. Any card hold was released.",
+  "charged": false,
+  "executed": false,
+  "payment_status": "NOT_CHARGED",
+  "fulfillment_status": "NOT_SUBMITTED",
+  "requires_human_approval": true,
+  "approval_mode": "in_chat",
+  "approval_url": "https://piloxa.com/?a=EXAMPLE-REVIEW-TOKEN&d=draft_EXAMPLE0001",
+  "events": [],
+  "evidence": [],
+  "observed_at": "2026-11-17T16:00:00.000Z",
+  "error": {
+    "code": "APPROVAL_BINDING_CHANGED",
+    "human_message": "The total for this payer is $14.00, not the $13.99 that was approved. Ask the person to approve $14.00 and call again with a new idempotency_key. Nothing was charged.",
+    "retryable": false,
+    "safe_next_action": "Tell the person the new total or document and ask again before any payment.",
+    "side_effect_status": "none",
+    "correlation_id": "corr_example0000000",
+    "observed_at": "2026-11-17T16:00:00.000Z",
+    "provider_code": "QUOTE_CHANGED"
+  }
+}

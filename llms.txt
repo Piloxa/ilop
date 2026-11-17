@@ -1,0 +1,27 @@
+# ILOP — Intent Logistics Orders Protocol
+
+> Open standard (draft v0.2, 2026-11-17), on top of MCP, for AI agents placing real-world orders (mail, courier, filing) for a person: quote, prepare, approve, carry out, track, prove.
+
+Key rules for agents:
+- Discover a provider at https://<domain>/.well-known/ilop.json. Trust it only from the provider's own origin.
+- Every tool result carries structuredContent.ilop with ilop_state, charged, executed, payment_status, fulfillment_status.
+- Never say "sent" before ACCEPTED or "mailed/shipped" before EXECUTED. COMPLETED does not mean a signature exists.
+- charged or executed may be null. On error.code OUTCOME_UNCERTAIN, call status; never retry a paying operation.
+- user_approved: true is never consent. The person approves on approval_url unless the host issued a payment credential.
+- On MCP 2026-07-28 keep the status_handle that prepare returns; an order id alone does not unlock status.
+
+## Spec
+- [SPEC.md](https://github.com/Piloxa/ilop/blob/main/SPEC.md)
+- [CHANGELOG](https://github.com/Piloxa/ilop/blob/main/CHANGELOG.md)
+- [Migration from 0.1](https://github.com/Piloxa/ilop/blob/main/MIGRATION-v0.1-to-v0.2.md)
+
+## Schemas and tests
+- [Schemas](https://github.com/Piloxa/ilop/tree/main/schema)
+- [Examples](https://github.com/Piloxa/ilop/tree/main/examples)
+- [Conformance harness](https://github.com/Piloxa/ilop/tree/main/conformance)
+
+## Docs
+- [Provider quickstart](https://github.com/Piloxa/ilop/blob/main/docs/provider-quickstart.md)
+- [MCP compatibility](https://github.com/Piloxa/ilop/blob/main/docs/mcp-compatibility.md)
+- [Privacy and proof](https://github.com/Piloxa/ilop/blob/main/docs/privacy-and-proof.md)
+- [Reference implementation mapping (Piloxa)](https://github.com/Piloxa/ilop/blob/main/docs/piloxa-reference-mapping.md)

@@ -1,0 +1,24 @@
+{
+  "ilop_version": "0.2",
+  "operation": "check",
+  "action": "mail.certified.us",
+  "order_id": null,
+  "ilop_state": "QUOTED",
+  "provider_state": "QUOTED",
+  "state_meaning": "A price only. No order exists; nothing was prepared, charged or mailed.",
+  "charged": false,
+  "executed": false,
+  "payment_status": "NOT_CHARGED",
+  "fulfillment_status": "NOT_SUBMITTED",
+  "requires_human_approval": true,
+  "approval_mode": "provider_hosted",
+  "quote": {
+    "currency": "USD",
+    "total_cents": 1400,
+    "valid_until": null,
+    "binding": "standard price; the payable total is the one shown on approval_url at checkout, where a first-letter promotion may lower it"
+  },
+  "events": [],
+  "evidence": [],
+  "observed_at": "2026-11-17T16:00:00.000Z"
+}

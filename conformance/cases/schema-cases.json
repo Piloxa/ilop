@@ -1,0 +1,838 @@
+{
+  "description": "Offline cases: each takes a file from examples/, optionally applies a patch (JSON Pointer -> value; null value with \"$delete\" removes), and validates it against one schema. expect: valid | invalid.",
+  "cases": [
+    {
+      "id": "D-01",
+      "group": "discovery",
+      "title": "Piloxa manifest is valid v0.2",
+      "file": "examples/piloxa-manifest.json",
+      "schema": "ilop-manifest.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "D-02",
+      "group": "discovery",
+      "title": "v0.1 manifest still validates (legacy)",
+      "file": "examples/legacy-v0.1-manifest.json",
+      "schema": "ilop-manifest.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "D-03",
+      "group": "discovery",
+      "title": "missing tools is invalid",
+      "file": "examples/piloxa-manifest.json",
+      "schema": "ilop-manifest.schema.json",
+      "delete": [
+        "/tools"
+      ],
+      "expect": "invalid"
+    },
+    {
+      "id": "D-04",
+      "group": "discovery",
+      "title": "unknown operation in tools map is invalid",
+      "file": "examples/piloxa-manifest.json",
+      "schema": "ilop-manifest.schema.json",
+      "patch": {
+        "/tools/teleport": "teleport_now"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "D-05",
+      "group": "discovery",
+      "title": "in-chat payment advertised without an authorize tool is invalid",
+      "file": "examples/piloxa-manifest.json",
+      "schema": "ilop-manifest.schema.json",
+      "patch": {
+        "/approval/in_chat": [
+          "stripe_shared_payment_token"
+        ]
+      },
+      "expect": "invalid",
+      "delete": [
+        "/tools/authorize"
+      ]
+    },
+    {
+      "id": "D-06",
+      "group": "discovery",
+      "title": "authorize mapped while in_chat_authorization says not listed is invalid",
+      "file": "examples/piloxa-manifest.json",
+      "schema": "ilop-manifest.schema.json",
+      "patch": {
+        "/features/in_chat_authorization": {
+          "listed": false
+        }
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "D-07",
+      "group": "discovery",
+      "title": "autonomous execution true is invalid",
+      "file": "examples/piloxa-manifest.json",
+      "schema": "ilop-manifest.schema.json",
+      "patch": {
+        "/actions/0/autonomous_execution": true
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "D-08",
+      "group": "discovery",
+      "title": "a v0.2 manifest without protocol_versions is invalid",
+      "file": "examples/piloxa-manifest.json",
+      "schema": "ilop-manifest.schema.json",
+      "delete": [
+        "/mcp/protocol_versions"
+      ],
+      "expect": "invalid"
+    },
+    {
+      "id": "D-09",
+      "group": "discovery",
+      "title": "malformed protocol version is invalid",
+      "file": "examples/piloxa-manifest.json",
+      "schema": "ilop-manifest.schema.json",
+      "patch": {
+        "/mcp/protocol_versions": [
+          "latest"
+        ]
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "D-10",
+      "group": "discovery",
+      "title": "full address in status advertised is invalid",
+      "file": "examples/piloxa-manifest.json",
+      "schema": "ilop-manifest.schema.json",
+      "patch": {
+        "/access/full_address_in_status": true
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "D-11",
+      "group": "discovery",
+      "title": "autonomous charge policy is invalid",
+      "file": "examples/piloxa-manifest.json",
+      "schema": "ilop-manifest.schema.json",
+      "patch": {
+        "/policy/autonomous_charge": true
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "D-12",
+      "group": "discovery",
+      "title": "bad action id is invalid",
+      "file": "examples/piloxa-manifest.json",
+      "schema": "ilop-manifest.schema.json",
+      "patch": {
+        "/actions/0/id": "Certified Mail"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "D-13",
+      "group": "discovery",
+      "title": "v0.2 without capability_revision is invalid",
+      "file": "examples/piloxa-manifest.json",
+      "schema": "ilop-manifest.schema.json",
+      "delete": [
+        "/capability_revision"
+      ],
+      "expect": "invalid"
+    },
+    {
+      "id": "Q-01",
+      "group": "quote",
+      "title": "quote envelope valid",
+      "file": "examples/quote-response.json",
+      "schema": "ilop-result.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "Q-02",
+      "group": "quote",
+      "title": "check envelope valid",
+      "file": "examples/check-response.json",
+      "schema": "ilop-result.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "Q-03",
+      "group": "quote",
+      "title": "a quote with an order_id is invalid (quotes create no order)",
+      "file": "examples/quote-response.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/order_id": "ord_1"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "Q-04",
+      "group": "quote",
+      "title": "a quote that charged is invalid",
+      "file": "examples/quote-response.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/charged": true
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "Q-05",
+      "group": "quote",
+      "title": "fractional minor units are invalid",
+      "file": "examples/quote-response.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/quote/total_cents": 15.97
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "Q-06",
+      "group": "quote",
+      "title": "lowercase currency is invalid",
+      "file": "examples/quote-response.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/quote/currency": "usd"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "Q-07",
+      "group": "quote",
+      "title": "quote state other than QUOTED is invalid",
+      "file": "examples/quote-response.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/ilop_state": "AWAITING_APPROVAL"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "Q-08",
+      "group": "quote",
+      "title": "negative total is invalid",
+      "file": "examples/quote-response.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/quote/total_cents": -1
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "Q-09",
+      "group": "quote",
+      "title": "quote without binding words is invalid",
+      "file": "examples/quote-response.json",
+      "schema": "ilop-order.schema.json",
+      "delete": [
+        "/quote/binding"
+      ],
+      "expect": "invalid"
+    },
+    {
+      "id": "Q-10",
+      "group": "quote",
+      "title": "check that executed is invalid",
+      "file": "examples/check-response.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/executed": true
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "P-01",
+      "group": "prepare",
+      "title": "prepare envelope valid",
+      "file": "examples/prepare-response.json",
+      "schema": "ilop-result.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "P-02",
+      "group": "prepare",
+      "title": "incomplete prepare valid (PREPARED)",
+      "file": "examples/prepare-response-incomplete.json",
+      "schema": "ilop-result.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "P-03",
+      "group": "prepare",
+      "title": "prepare that charged is invalid",
+      "file": "examples/prepare-response.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/charged": true
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "P-04",
+      "group": "prepare",
+      "title": "prepare that executed is invalid",
+      "file": "examples/prepare-response.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/executed": true
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "P-05",
+      "group": "prepare",
+      "title": "prepare returning ACCEPTED is invalid",
+      "file": "examples/prepare-response.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/ilop_state": "ACCEPTED"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "P-06",
+      "group": "prepare",
+      "title": "prepare without state_meaning is invalid",
+      "file": "examples/prepare-response.json",
+      "schema": "ilop-order.schema.json",
+      "delete": [
+        "/state_meaning"
+      ],
+      "expect": "invalid"
+    },
+    {
+      "id": "P-07",
+      "group": "prepare",
+      "title": "bad document digest is invalid",
+      "file": "examples/prepare-response.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/evidence/0/subject": {
+          "content_sha256": "not-a-hash"
+        }
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "P-08",
+      "group": "prepare",
+      "title": "approval_url that is not a URI is invalid",
+      "file": "examples/prepare-response.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/approval_url": "open the link"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "P-09",
+      "group": "prepare",
+      "title": "payment_status CAPTURED with charged false is invalid",
+      "file": "examples/prepare-response.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/payment_status": "CAPTURED",
+        "/operation": "status",
+        "/ilop_state": "ACCEPTED",
+        "/charged": false,
+        "/fulfillment_status": "PARTNER_ACCEPTED"
+      },
+      "expect": "valid",
+      "note": "CAPTURED with charged false is a semantic error caught by the trace rules (T-03), not the schema; recorded here so the gap is explicit."
+    },
+    {
+      "id": "P-10",
+      "group": "prepare",
+      "title": "requires_human_approval missing is invalid",
+      "file": "examples/prepare-response.json",
+      "schema": "ilop-order.schema.json",
+      "delete": [
+        "/requires_human_approval"
+      ],
+      "expect": "invalid"
+    },
+    {
+      "id": "P-11",
+      "group": "prepare",
+      "title": "unknown state word is invalid",
+      "file": "examples/prepare-response.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/ilop_state": "SENT"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "P-12",
+      "group": "prepare",
+      "title": "wrong ilop_version is invalid",
+      "file": "examples/prepare-response.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/ilop_version": "1.0"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "A-01",
+      "group": "approval",
+      "title": "in-chat acceptance valid",
+      "file": "examples/authorize-accepted.json",
+      "schema": "ilop-result.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "A-02",
+      "group": "approval",
+      "title": "replay valid and marked",
+      "file": "examples/authorize-replayed.json",
+      "schema": "ilop-result.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "A-03",
+      "group": "approval",
+      "title": "binding-changed refusal valid",
+      "file": "examples/authorize-binding-changed.json",
+      "schema": "ilop-result.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "A-04",
+      "group": "approval",
+      "title": "uncertain outcome valid",
+      "file": "examples/outcome-uncertain.json",
+      "schema": "ilop-result.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "A-05",
+      "group": "approval",
+      "title": "OUTCOME_UNCERTAIN marked retryable is invalid",
+      "file": "examples/outcome-uncertain.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/error/retryable": true
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "A-06",
+      "group": "approval",
+      "title": "uncertain fulfillment with executed false is invalid",
+      "file": "examples/outcome-uncertain.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/executed": false
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "A-07",
+      "group": "approval",
+      "title": "a hold reported as charged is invalid",
+      "file": "examples/outcome-uncertain.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/charged": true
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "A-08",
+      "group": "approval",
+      "title": "ACCEPTED reported as executed is invalid",
+      "file": "examples/authorize-accepted.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/executed": true
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "A-09",
+      "group": "approval",
+      "title": "unknown payment with a definite charged is invalid",
+      "file": "examples/authorize-accepted.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/payment_status": "UNKNOWN"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "A-10",
+      "group": "approval",
+      "title": "IDEMPOTENCY_CONFLICT retryable is invalid",
+      "file": "examples/authorize-binding-changed.json",
+      "schema": "ilop-error.schema.json",
+      "pointer": "/error",
+      "patch": {
+        "/code": "IDEMPOTENCY_CONFLICT",
+        "/retryable": true
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "A-11",
+      "group": "approval",
+      "title": "error without safe_next_action is invalid",
+      "file": "examples/authorize-binding-changed.json",
+      "schema": "ilop-error.schema.json",
+      "pointer": "/error",
+      "delete": [
+        "/safe_next_action"
+      ],
+      "expect": "invalid"
+    },
+    {
+      "id": "A-12",
+      "group": "approval",
+      "title": "unknown error code is invalid",
+      "file": "examples/authorize-binding-changed.json",
+      "schema": "ilop-error.schema.json",
+      "pointer": "/error",
+      "patch": {
+        "/code": "OOPS"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "A-13",
+      "group": "approval",
+      "title": "approval record authenticated only by the agent is invalid",
+      "file": "conformance/fixtures/approval-hosted.json",
+      "schema": "ilop-approval.schema.json",
+      "patch": {
+        "/approver/authenticated_by": "agent_user_approved_flag"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "A-14",
+      "group": "approval",
+      "title": "hosted approval record valid",
+      "file": "conformance/fixtures/approval-hosted.json",
+      "schema": "ilop-approval.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "A-15",
+      "group": "approval",
+      "title": "approval without content digest is invalid",
+      "file": "conformance/fixtures/approval-hosted.json",
+      "schema": "ilop-approval.schema.json",
+      "delete": [
+        "/content_sha256"
+      ],
+      "expect": "invalid"
+    },
+    {
+      "id": "A-16",
+      "group": "approval",
+      "title": "approval without destination digest is invalid",
+      "file": "conformance/fixtures/approval-hosted.json",
+      "schema": "ilop-approval.schema.json",
+      "delete": [
+        "/destination_digest"
+      ],
+      "expect": "invalid"
+    },
+    {
+      "id": "A-17",
+      "group": "approval",
+      "title": "approval without exact total is invalid",
+      "file": "conformance/fixtures/approval-hosted.json",
+      "schema": "ilop-approval.schema.json",
+      "delete": [
+        "/approved_total_cents"
+      ],
+      "expect": "invalid"
+    },
+    {
+      "id": "A-18",
+      "group": "approval",
+      "title": "a refusal claiming OUTCOME_UNCERTAIN is not a clean refusal",
+      "file": "conformance/fixtures/refusal-not-authorized.json",
+      "schema": "ilop-result.schema.json",
+      "patch": {
+        "/error/code": "OUTCOME_UNCERTAIN",
+        "/error/retryable": false
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "S-01",
+      "group": "status",
+      "title": "status ACCEPTED valid",
+      "file": "examples/status-accepted.json",
+      "schema": "ilop-result.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "S-02",
+      "group": "status",
+      "title": "status EXECUTED valid",
+      "file": "examples/status-executed.json",
+      "schema": "ilop-result.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "S-03",
+      "group": "status",
+      "title": "status COMPLETED valid",
+      "file": "examples/status-delivered.json",
+      "schema": "ilop-result.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "S-04",
+      "group": "status",
+      "title": "status EXCEPTION (returned) valid",
+      "file": "examples/status-returned.json",
+      "schema": "ilop-result.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "S-05",
+      "group": "status",
+      "title": "status unconfirmed valid",
+      "file": "examples/status-unconfirmed.json",
+      "schema": "ilop-result.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "S-06",
+      "group": "status",
+      "title": "EXECUTED with executed false is invalid",
+      "file": "examples/status-executed.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/executed": false
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "S-07",
+      "group": "status",
+      "title": "returned letter called delivered state is caught by trace rule T-05",
+      "file": "examples/status-returned.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/ilop_state": "COMPLETED"
+      },
+      "expect": "valid",
+      "note": "Schema-valid; T-05 rejects COMPLETED after a CARRIER_RETURNED event."
+    },
+    {
+      "id": "S-08",
+      "group": "status",
+      "title": "event with no source is invalid",
+      "file": "examples/status-returned.json",
+      "schema": "ilop-order.schema.json",
+      "delete": [
+        "/events/0/source"
+      ],
+      "expect": "invalid"
+    },
+    {
+      "id": "S-09",
+      "group": "status",
+      "title": "event source without third_party_authenticated is invalid",
+      "file": "examples/status-returned.json",
+      "schema": "ilop-order.schema.json",
+      "delete": [
+        "/events/0/source/third_party_authenticated"
+      ],
+      "expect": "invalid"
+    },
+    {
+      "id": "S-10",
+      "group": "status",
+      "title": "event with a made-up type is invalid",
+      "file": "examples/status-returned.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/events/0/event_type": "PROBABLY_DELIVERED"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "S-11",
+      "group": "status",
+      "title": "null state without an error is invalid",
+      "file": "examples/status-accepted.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/ilop_state": null
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "S-12",
+      "group": "status",
+      "title": "unknown fulfillment with executed true is invalid",
+      "file": "examples/status-delivered.json",
+      "schema": "ilop-order.schema.json",
+      "patch": {
+        "/fulfillment_status": "UNKNOWN"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "S-13",
+      "group": "status",
+      "title": "status list wrapper valid",
+      "file": "conformance/fixtures/status-list.json",
+      "schema": "ilop-status.schema.json",
+      "expect": "valid"
+    },
+    {
+      "id": "S-14",
+      "group": "status",
+      "title": "status list containing a prepare envelope is invalid",
+      "file": "conformance/fixtures/status-list.json",
+      "schema": "ilop-status.schema.json",
+      "patch": {
+        "/orders/0/operation": "prepare"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "E-01",
+      "group": "evidence",
+      "title": "PENDING proof with a value is invalid (no invented receipts)",
+      "file": "examples/status-returned.json",
+      "schema": "ilop-proof.schema.json",
+      "pointer": "/evidence/2",
+      "patch": {
+        "/value": "signed by J. Doe"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "E-02",
+      "group": "evidence",
+      "title": "proof without issuer is invalid",
+      "file": "examples/status-returned.json",
+      "schema": "ilop-proof.schema.json",
+      "pointer": "/evidence/0",
+      "delete": [
+        "/issuer"
+      ],
+      "expect": "invalid"
+    },
+    {
+      "id": "E-03",
+      "group": "evidence",
+      "title": "proof without source is invalid",
+      "file": "examples/status-returned.json",
+      "schema": "ilop-proof.schema.json",
+      "pointer": "/evidence/0",
+      "delete": [
+        "/source"
+      ],
+      "expect": "invalid"
+    },
+    {
+      "id": "E-04",
+      "group": "evidence",
+      "title": "signature of unknown format is invalid",
+      "file": "examples/status-returned.json",
+      "schema": "ilop-proof.schema.json",
+      "pointer": "/evidence/0",
+      "patch": {
+        "/signature": {
+          "format": "homemade",
+          "key_id": "k1",
+          "key_url": "https://example.com/k",
+          "value": "x"
+        }
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "E-05",
+      "group": "evidence",
+      "title": "signature without key_url is invalid",
+      "file": "examples/status-returned.json",
+      "schema": "ilop-proof.schema.json",
+      "pointer": "/evidence/0",
+      "patch": {
+        "/signature": {
+          "format": "jws-detached-ed25519",
+          "key_id": "k1",
+          "value": "x"
+        }
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "E-06",
+      "group": "evidence",
+      "title": "a well-formed detached signature block validates",
+      "file": "examples/status-returned.json",
+      "schema": "ilop-proof.schema.json",
+      "pointer": "/evidence/0",
+      "patch": {
+        "/signature": {
+          "format": "jws-detached-ed25519",
+          "key_id": "k1",
+          "key_url": "https://example.com/.well-known/key.json",
+          "value": "eyJhbGciOiJFZERTQSJ9..sig"
+        }
+      },
+      "expect": "valid"
+    },
+    {
+      "id": "E-07",
+      "group": "evidence",
+      "title": "unknown proof status is invalid",
+      "file": "examples/status-returned.json",
+      "schema": "ilop-proof.schema.json",
+      "pointer": "/evidence/0",
+      "patch": {
+        "/status": "PROVEN_DELIVERED"
+      },
+      "expect": "invalid"
+    },
+    {
+      "id": "E-08",
+      "group": "evidence",
+      "title": "every example evidence item is schema-valid",
+      "file": "examples/status-delivered.json",
+      "schema": "ilop-proof.schema.json",
+      "pointer": "/evidence/1",
+      "expect": "valid"
+    },
+    {
+      "id": "M-01",
+      "group": "mcp",
+      "title": "2026 trace prepare envelope valid",
+      "file": "examples/mcp-2026-trace.json",
+      "schema": "ilop-result.schema.json",
+      "pointer": "/prepare/ilop",
+      "expect": "valid"
+    },
+    {
+      "id": "M-02",
+      "group": "mcp",
+      "title": "2026 status without a handle is a clean NOT_AUTHORIZED refusal",
+      "file": "examples/mcp-2026-trace.json",
+      "schema": "ilop-result.schema.json",
+      "pointer": "/status_without_handle",
+      "expect": "valid"
+    }
+  ]
+}

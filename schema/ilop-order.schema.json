@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ilop.ai/schema/ilop-order.schema.json",
+  "title": "ILOP v0.2 operation result envelope (structuredContent.ilop)",
+  "type": "object",
+  "required": ["ilop_version", "operation", "action", "order_id", "ilop_state", "state_meaning", "charged", "executed", "payment_status", "fulfillment_status", "requires_human_approval", "approval_mode", "observed_at"],
+  "properties": {
+    "ilop_version": { "$ref": "ilop-common.schema.json#/$defs/version" },
+    "operation": { "$ref": "ilop-common.schema.json#/$defs/operation" },
+    "action": { "$ref": "ilop-common.schema.json#/$defs/actionId" },
+    "order_id": { "type": ["string", "null"] },
+    "ilop_state": { "$ref": "ilop-common.schema.json#/$defs/nullableState" },
+    "provider_state": { "type": ["string", "null"], "description": "The provider's own state word, kept so nothing is lost in translation." },
+    "provider_reference": { "type": "string", "description": "The provider's own record id, when it differs from order_id." },
+    "state_meaning": { "type": "string", "minLength": 1 },
+    "charged": { "type": ["boolean", "null"], "description": "true only for confirmed capture. null = unknown." },
+    "executed": { "type": ["boolean", "null"], "description": "true only once the action's physical execution event is evidenced. null = unknown." },
+    "payment_status": { "$ref": "ilop-common.schema.json#/$defs/paymentStatus" },
+    "fulfillment_status": { "$ref": "ilop-common.schema.json#/$defs/fulfillmentStatus" },
+    "requires_human_approval": { "type": "boolean" },
+    "approval_mode": { "enum": ["provider_hosted", "in_chat"] },
+    "approval_url": { "type": "string", "format": "uri" },
+    "quote": { "$ref": "ilop-quote.schema.json" },
+    "events": { "type": "array", "items": { "$ref": "ilop-event.schema.json" } },
+    "evidence": { "type": "array", "items": { "$ref": "ilop-proof.schema.json" } },
+    "next_actions": { "type": "array", "items": { "type": "object", "required": ["action", "title"], "properties": { "action": { "type": "string" }, "title": { "type": "string" }, "prepare_args": { "type": "object" } } } },
+    "replayed": { "type": "boolean" },
+    "error": { "$ref": "ilop-error.schema.json" },
+    "observed_at": { "$ref": "ilop-common.schema.json#/$defs/timestamp" }
+  },
+  "allOf": [
+    { "if": { "properties": { "operation": { "enum": ["quote", "check"] } } }, "then": { "properties": { "order_id": { "type": "null" }, "ilop_state": { "const": "QUOTED" }, "charged": { "const": false }, "executed": { "const": false } } } },
+    { "if": { "properties": { "operation": { "const": "prepare" } } }, "then": { "properties": { "ilop_state": { "enum": ["PREPARED", "AWAITING_APPROVAL"] }, "charged": { "const": false }, "executed": { "const": false } } } },
+    { "if": { "properties": { "ilop_state": { "enum": ["QUOTED", "PREPARED", "AWAITING_APPROVAL", "AUTHORIZED", "ACCEPTED", "FAILED", "CANCELLED"] } }, "required": ["ilop_state"] }, "then": { "properties": { "executed": { "enum": [false, null] } } } },
+    { "if": { "properties": { "ilop_state": { "enum": ["EXECUTED", "COMPLETED", "EXCEPTION"] } }, "required": ["ilop_state"] }, "then": { "properties": { "executed": { "const": true } } } },
+    { "if": { "properties": { "payment_status": { "enum": ["NOT_CHARGED", "AUTHORIZED_NOT_CAPTURED", "DECLINED"] } } }, "then": { "properties": { "charged": { "const": false } } } },
+    { "if": { "properties": { "payment_status": { "const": "UNKNOWN" } } }, "then": { "properties": { "charged": { "const": null } } } },
+    { "if": { "properties": { "ilop_state": { "type": "null" } } }, "then": { "required": ["error"] } },
+    { "if": { "properties": { "fulfillment_status": { "const": "UNKNOWN" } } }, "then": { "properties": { "executed": { "const": null } } } }
+  ]
+}
