@@ -1,0 +1,17 @@
+{
+  "name": "ilop-conformance",
+  "version": "0.2.0",
+  "private": true,
+  "description": "ILOP (Intent Logistics Orders Protocol) v0.2 schemas, examples and conformance harness",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "test": "node conformance/runner/run.mjs",
+    "live": "node conformance/runner/run.mjs --live"
+  },
+  "engines": { "node": ">=20" },
+  "devDependencies": {
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1"
+  }
+}

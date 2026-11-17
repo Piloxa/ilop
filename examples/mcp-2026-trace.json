@@ -1,0 +1,68 @@
+{
+  "server_discover": {
+    "supportedVersions": [
+      "2026-07-28",
+      "2025-06-18",
+      "2025-03-26",
+      "2024-11-05"
+    ],
+    "resultType": "complete",
+    "ttlMs": 300000,
+    "cacheScope": "public"
+  },
+  "prepare": {
+    "status_handle": "ilsh1.EXAMPLE.HANDLE",
+    "ilop": {
+      "ilop_version": "0.2",
+      "operation": "prepare",
+      "action": "mail.certified.us",
+      "order_id": "draft_EXAMPLE0001",
+      "ilop_state": "AWAITING_APPROVAL",
+      "provider_state": "AWAITING_APPROVAL",
+      "state_meaning": "The letter is ready for the person to review and approve on the provider page. It has not been charged or mailed.",
+      "charged": false,
+      "executed": false,
+      "payment_status": "NOT_CHARGED",
+      "fulfillment_status": "NOT_SUBMITTED",
+      "requires_human_approval": true,
+      "approval_mode": "provider_hosted",
+      "approval_url": "https://piloxa.com/?a=EXAMPLE-REVIEW-TOKEN&d=draft_EXAMPLE0001",
+      "quote": {
+        "currency": "USD",
+        "total_cents": 1400,
+        "valid_until": "2026-11-17T16:00:00.000Z",
+        "binding": "payable total until valid_until"
+      },
+      "events": [],
+      "evidence": [
+        {
+          "type": "document_hash",
+          "claim": "prepared_document_digest",
+          "issuer": "Piloxa",
+          "status": "RECORDED",
+          "value": "f81eb34ec745b7f5878bda6bb5f43e270c9207935d09fff987034efe9133c662",
+          "source": {
+            "system": "provider",
+            "third_party_authenticated": false
+          }
+        }
+      ],
+      "observed_at": "2026-11-17T16:00:00.000Z"
+    }
+  },
+  "status_without_handle": {
+    "ilop_version": "0.2",
+    "operation": "status",
+    "charged": false,
+    "executed": false,
+    "error": {
+      "code": "NOT_AUTHORIZED",
+      "human_message": "A valid status_handle from prepare_certified_letter is required. A mailing_id, reference or tracking number alone does not unlock status.",
+      "retryable": false,
+      "safe_next_action": "The person signs in at piloxa.com to see every letter they sent.",
+      "side_effect_status": "none",
+      "correlation_id": "corr_example0000000",
+      "observed_at": "2026-11-17T16:00:00.000Z"
+    }
+  }
+}

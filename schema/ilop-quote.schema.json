@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ilop.ai/schema/ilop-quote.schema.json",
+  "title": "ILOP v0.2 Quote",
+  "type": "object",
+  "required": ["currency", "total_cents", "valid_until", "binding"],
+  "properties": {
+    "currency": { "$ref": "ilop-common.schema.json#/$defs/currency" },
+    "total_cents": { "$ref": "ilop-common.schema.json#/$defs/minorUnits" },
+    "valid_until": { "$ref": "ilop-common.schema.json#/$defs/nullableTimestamp" },
+    "binding": { "type": "string", "minLength": 1, "description": "Plain words on whether this total is what the person will pay, and what can change it." },
+    "breakdown": { "type": "object", "additionalProperties": { "$ref": "ilop-common.schema.json#/$defs/minorUnits" } },
+    "options": { "type": "object" }
+  }
+}

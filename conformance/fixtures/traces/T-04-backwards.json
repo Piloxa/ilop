@@ -1,0 +1,184 @@
+{
+  "id": "T-04",
+  "title": "state moves backwards",
+  "expect": "invalid",
+  "violates": "forward_only",
+  "trace": [
+    {
+      "ilop_version": "0.2",
+      "operation": "prepare",
+      "action": "mail.certified.us",
+      "order_id": "draft_EXAMPLE0001",
+      "ilop_state": "AWAITING_APPROVAL",
+      "provider_state": "AWAITING_APPROVAL",
+      "state_meaning": "The letter is ready for the person to review and approve on the provider page. It has not been charged or mailed.",
+      "charged": false,
+      "executed": false,
+      "payment_status": "NOT_CHARGED",
+      "fulfillment_status": "NOT_SUBMITTED",
+      "requires_human_approval": true,
+      "approval_mode": "provider_hosted",
+      "approval_url": "https://piloxa.com/?a=EXAMPLE-REVIEW-TOKEN&d=draft_EXAMPLE0001",
+      "quote": {
+        "currency": "USD",
+        "total_cents": 1400,
+        "valid_until": "2026-11-17T16:00:00.000Z",
+        "binding": "payable total until valid_until"
+      },
+      "events": [],
+      "evidence": [
+        {
+          "type": "document_hash",
+          "claim": "prepared_document_digest",
+          "issuer": "Piloxa",
+          "status": "RECORDED",
+          "value": "92f780c9ce3a4b711bf47e69cc591e12bf4099185325105586db1a54c88be832",
+          "source": {
+            "system": "provider",
+            "third_party_authenticated": false
+          }
+        }
+      ],
+      "observed_at": "2026-11-17T16:00:00.000Z"
+    },
+    {
+      "ilop_version": "0.2",
+      "operation": "status",
+      "action": "mail.certified.us",
+      "order_id": "draft_EXAMPLE0001",
+      "provider_reference": "act_EXAMPLE0001",
+      "ilop_state": "EXECUTED",
+      "provider_state": "MAILED",
+      "state_meaning": "USPS reported accepting the letter. Delivery is not yet confirmed.",
+      "charged": true,
+      "executed": true,
+      "payment_status": "CAPTURED",
+      "fulfillment_status": "CARRIER_ACCEPTED",
+      "requires_human_approval": true,
+      "approval_mode": "provider_hosted",
+      "events": [
+        {
+          "event_type": "PARTNER_ACCEPTED",
+          "source": {
+            "system": "practice_printer",
+            "third_party_authenticated": false,
+            "reported_by": "partner"
+          },
+          "occurred_at": "2026-11-17T16:00:00.000Z"
+        },
+        {
+          "event_type": "CARRIER_ACCEPTED",
+          "source": {
+            "system": "practice_printer",
+            "reported_by": "carrier",
+            "relayed_by": "partner",
+            "third_party_authenticated": false
+          },
+          "occurred_at": "2026-11-17T16:00:00.000Z"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "document_hash",
+          "claim": "approved_document_digest",
+          "issuer": "Piloxa",
+          "status": "RECORDED",
+          "value": "92f780c9ce3a4b711bf47e69cc591e12bf4099185325105586db1a54c88be832",
+          "source": {
+            "system": "provider",
+            "third_party_authenticated": false
+          }
+        },
+        {
+          "type": "carrier_tracking",
+          "claim": "carrier_tracking_number_assigned",
+          "issuer": "Piloxa",
+          "status": "REPORTED",
+          "value": "9407100000000000000000",
+          "source": {
+            "system": "mail_fulfillment_partner",
+            "source_record_type": "carrier_tracking_event",
+            "third_party_authenticated": false
+          }
+        },
+        {
+          "type": "return_receipt",
+          "claim": "electronic_return_receipt",
+          "issuer": "Piloxa",
+          "status": "PENDING",
+          "value": null,
+          "source": {
+            "system": "mail_fulfillment_partner",
+            "source_record_type": "usps_electronic_return_receipt",
+            "third_party_authenticated": false
+          }
+        }
+      ],
+      "observed_at": "2026-11-17T16:00:00.000Z"
+    },
+    {
+      "ilop_version": "0.2",
+      "operation": "status",
+      "action": "mail.certified.us",
+      "order_id": "draft_EXAMPLE0001",
+      "provider_reference": "act_EXAMPLE0001",
+      "ilop_state": "ACCEPTED",
+      "provider_state": "VENDOR_ACCEPTED",
+      "state_meaning": "The print and mail partner accepted the job. USPS handoff is not yet confirmed.",
+      "charged": true,
+      "executed": false,
+      "payment_status": "CAPTURED",
+      "fulfillment_status": "PARTNER_ACCEPTED",
+      "requires_human_approval": true,
+      "approval_mode": "provider_hosted",
+      "events": [
+        {
+          "event_type": "PARTNER_ACCEPTED",
+          "source": {
+            "system": "practice_printer",
+            "third_party_authenticated": false,
+            "reported_by": "partner"
+          },
+          "occurred_at": "2026-11-17T16:00:00.000Z"
+        }
+      ],
+      "evidence": [
+        {
+          "type": "document_hash",
+          "claim": "approved_document_digest",
+          "issuer": "Piloxa",
+          "status": "RECORDED",
+          "value": "92f780c9ce3a4b711bf47e69cc591e12bf4099185325105586db1a54c88be832",
+          "source": {
+            "system": "provider",
+            "third_party_authenticated": false
+          }
+        },
+        {
+          "type": "carrier_tracking",
+          "claim": "carrier_tracking_number_assigned",
+          "issuer": "Piloxa",
+          "status": "PENDING",
+          "value": null,
+          "source": {
+            "system": "mail_fulfillment_partner",
+            "third_party_authenticated": false
+          }
+        },
+        {
+          "type": "return_receipt",
+          "claim": "electronic_return_receipt",
+          "issuer": "Piloxa",
+          "status": "PENDING",
+          "value": null,
+          "source": {
+            "system": "mail_fulfillment_partner",
+            "source_record_type": "usps_electronic_return_receipt",
+            "third_party_authenticated": false
+          }
+        }
+      ],
+      "observed_at": "2026-11-17T16:00:00.000Z"
+    }
+  ]
+}

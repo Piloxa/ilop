@@ -1,0 +1,13 @@
+{
+  "channel": "hosted_page",
+  "approved_total_cents": 1597,
+  "currency": "USD",
+  "content_sha256": "5d1e4b5499c235e4b81a5fa272832fbeea3a1238cfb10558ccbfa411ca8589c7",
+  "destination_digest": "sha256:0b6f6a4c1f0e7d2a9c3b5e8f1a2d4c6b",
+  "service": "CERTIFIED_ERR",
+  "order_version": 1,
+  "approved_at": "2026-11-17T16:00:00.000Z",
+  "approval_statement": "I have read this letter and approve mailing it for the total shown.",
+  "approver": { "authenticated_by": "provider_email_verification", "subject_ref": "user_EXAMPLE" },
+  "payment_method": "card"
+}

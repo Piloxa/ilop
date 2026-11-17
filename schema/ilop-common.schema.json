@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ilop.ai/schema/ilop-common.schema.json",
+  "title": "ILOP v0.2 shared definitions",
+  "$defs": {
+    "version": { "type": "string", "pattern": "^0\\.2$" },
+    "state": { "enum": ["QUOTED", "PREPARED", "AWAITING_APPROVAL", "AUTHORIZED", "ACCEPTED", "EXECUTED", "COMPLETED", "EXCEPTION", "FAILED", "CANCELLED"] },
+    "nullableState": { "anyOf": [{ "$ref": "#/$defs/state" }, { "type": "null" }] },
+    "paymentStatus": { "enum": ["NOT_CHARGED", "AUTHORIZED_NOT_CAPTURED", "CAPTURED", "PARTIALLY_REFUNDED", "REFUNDED", "DECLINED", "UNKNOWN"] },
+    "fulfillmentStatus": { "enum": ["NOT_SUBMITTED", "PARTNER_ACCEPTED", "PARTNER_REJECTED", "CARRIER_ACCEPTED", "DELIVERED", "RETURNED", "UNKNOWN"] },
+    "operation": { "enum": ["check", "quote", "prepare", "authorize", "status", "proof"] },
+    "actionId": { "type": "string", "pattern": "^[a-z0-9]+(\\.[a-z0-9_]+)+$" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "nullableTimestamp": { "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }] },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "minorUnits": { "type": "integer", "minimum": 0 },
+    "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+    "source": {
+      "type": "object",
+      "required": ["system", "third_party_authenticated"],
+      "properties": {
+        "system": { "type": "string", "minLength": 1 },
+        "reported_by": { "enum": ["provider", "partner", "carrier", "customer"] },
+        "relayed_by": { "enum": ["provider", "partner"] },
+        "source_record_type": { "type": "string" },
+        "source_reference": { "type": ["string", "null"] },
+        "third_party_authenticated": { "type": "boolean" }
+      }
+    }
+  }
+}

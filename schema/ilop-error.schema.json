@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ilop.ai/schema/ilop-error.schema.json",
+  "title": "ILOP v0.2 typed error",
+  "type": "object",
+  "required": ["code", "human_message", "retryable", "safe_next_action", "side_effect_status", "correlation_id", "observed_at"],
+  "properties": {
+    "code": { "enum": ["VALIDATION_FAILED", "OUT_OF_SERVICE_AREA", "UNSUPPORTED_SERVICE", "QUOTE_EXPIRED", "APPROVAL_REQUIRED", "APPROVAL_EXPIRED", "APPROVAL_BINDING_CHANGED", "PAYMENT_METHOD_UNAVAILABLE", "NOT_AUTHORIZED", "IDEMPOTENCY_CONFLICT", "RATE_LIMITED", "PARTNER_REJECTED", "OUTCOME_UNCERTAIN", "EVIDENCE_PENDING", "UPSTREAM_UNAVAILABLE", "INTERNAL_ERROR"] },
+    "human_message": { "type": "string" },
+    "retryable": { "type": "boolean" },
+    "safe_next_action": { "type": "string" },
+    "side_effect_status": { "type": "string", "minLength": 1 },
+    "correlation_id": { "type": "string", "minLength": 1 },
+    "observed_at": { "$ref": "ilop-common.schema.json#/$defs/timestamp" },
+    "provider_code": { "type": "string" }
+  },
+  "allOf": [
+    { "if": { "properties": { "code": { "const": "OUTCOME_UNCERTAIN" } } }, "then": { "properties": { "retryable": { "const": false } } } },
+    { "if": { "properties": { "code": { "enum": ["APPROVAL_BINDING_CHANGED", "IDEMPOTENCY_CONFLICT"] } } }, "then": { "properties": { "retryable": { "const": false } } } }
+  ]
+}

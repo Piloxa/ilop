@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ilop.ai/schema/ilop-event.schema.json",
+  "title": "ILOP v0.2 Event",
+  "type": "object",
+  "required": ["event_type", "source", "occurred_at"],
+  "properties": {
+    "event_id": { "type": "string" },
+    "event_type": { "enum": ["APPROVED", "PAYMENT_AUTHORIZED", "PAYMENT_CAPTURED", "PAYMENT_RELEASED", "PAYMENT_REFUNDED", "PARTNER_ACCEPTED", "PARTNER_REJECTED", "CARRIER_ACCEPTED", "CARRIER_IN_TRANSIT", "CARRIER_DELIVERED", "CARRIER_RETURNED", "RETURN_RECEIPT_REPORTED", "CANCELLED"] },
+    "source": { "$ref": "ilop-common.schema.json#/$defs/source" },
+    "occurred_at": { "$ref": "ilop-common.schema.json#/$defs/nullableTimestamp", "description": "The time the SOURCE gave. null when the source gave none; never filled in by the provider." },
+    "observed_at": { "$ref": "ilop-common.schema.json#/$defs/timestamp" },
+    "raw_record_digest": { "$ref": "ilop-common.schema.json#/$defs/sha256" },
+    "detail": { "type": "string" }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "ilop_version": "0.2",
+  "operation": "status",
+  "charged": false,
+  "executed": false,
+  "error": {
+    "code": "NOT_AUTHORIZED",
+    "human_message": "A valid status_handle from prepare is required. A mailing_id, reference or tracking number alone does not unlock status.",
+    "retryable": false,
+    "safe_next_action": "The person signs in at the provider to see every order they placed.",
+    "side_effect_status": "none",
+    "correlation_id": "corr_example0000000",
+    "observed_at": "2026-11-17T16:00:00.000Z"
+  }
+}

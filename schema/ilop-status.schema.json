@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ilop.ai/schema/ilop-status.schema.json",
+  "title": "ILOP v0.2 status answer: one envelope per order the caller may see",
+  "type": "object",
+  "required": ["orders"],
+  "properties": {
+    "orders": { "type": "array", "items": { "allOf": [{ "$ref": "ilop-order.schema.json" }, { "properties": { "operation": { "const": "status" } } }] } },
+    "scope": { "type": "string" },
+    "error": { "$ref": "ilop-error.schema.json" }
+  }
+}

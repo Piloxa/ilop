@@ -1,0 +1,29 @@
+{
+  "ilop_version": "0.2",
+  "operation": "authorize",
+  "action": "mail.certified.us",
+  "order_id": "draft_EXAMPLE0001",
+  "provider_reference": "act_EXAMPLE0001",
+  "ilop_state": "AUTHORIZED",
+  "provider_state": "AUTHORIZED",
+  "state_meaning": "The printer may have taken this letter but has not confirmed it. Do not retry or pay again; Piloxa is reconciling it with the printer and the card is held, not charged.",
+  "charged": false,
+  "executed": null,
+  "payment_status": "AUTHORIZED_NOT_CAPTURED",
+  "fulfillment_status": "UNKNOWN",
+  "requires_human_approval": true,
+  "approval_mode": "in_chat",
+  "approval_url": "https://piloxa.com/?a=EXAMPLE-REVIEW-TOKEN&d=draft_EXAMPLE0001",
+  "events": [],
+  "evidence": [],
+  "observed_at": "2026-11-17T16:00:00.000Z",
+  "error": {
+    "code": "OUTCOME_UNCERTAIN",
+    "human_message": "The printer may have taken this letter but has not confirmed it. Do not retry or pay again; Piloxa is reconciling it with the printer and the card is held, not charged.",
+    "retryable": false,
+    "safe_next_action": "Call status later. Never call authorize again for this letter.",
+    "side_effect_status": "payment_held_fulfillment_unknown",
+    "correlation_id": "corr_example0000000",
+    "observed_at": "2026-11-17T16:00:00.000Z"
+  }
+}

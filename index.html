@@ -32,13 +32,14 @@ footer{margin-top:56px;color:var(--muted);font-size:.9rem;border-top:1px solid v
 </head>
 <body>
 <main>
-<span class="status">Draft v0.1 · November 2026</span>
+<span class="status">Draft v0.2 · 17 November 2026</span>
 <h1>ILOP</h1>
 <p class="tag"><b>Intent Logistics Orders Protocol.</b> An open standard for how AI agents turn a person's intent into a completed real-world order, and prove it was done.</p>
 <p>ILOP sits on top of <a href="https://modelcontextprotocol.io">MCP</a>. MCP defines how an assistant talks to a service. ILOP defines what a trustworthy real-world order looks like once it does.</p>
 <div class="btns">
 <a class="btn primary" href="https://github.com/Piloxa/ilop/blob/main/SPEC.md">Read the spec</a>
 <a class="btn" href="https://github.com/Piloxa/ilop">GitHub</a>
+<a class="btn" href="https://github.com/Piloxa/ilop/tree/main/conformance">Conformance tests</a>
 <a class="btn" href="https://piloxa.com">Reference implementation</a>
 </div>
 
@@ -46,34 +47,54 @@ footer{margin-top:56px;color:var(--muted);font-size:.9rem;border-top:1px solid v
 <ol class="steps">
 <li><b>Quote</b>The exact all-in price, before anything exists.</li>
 <li><b>Prepare</b>The order is written up and checked; the person gets a link to read exactly what will be done.</li>
-<li><b>Approve and pay</b>The person says yes to that exact total, on the link or in the chat.</li>
+<li><b>Approve and pay</b>The person approves that exact document, destination and total on the provider's page, or in the chat where the host issues a real payment credential.</li>
 <li><b>Carry out</b>The job goes to the partner who does the physical work. The card is charged only when they accept it.</li>
-<li><b>Track</b>One small set of plain status words, from Quoted to Completed.</li>
-<li><b>Prove and repeat</b>Proof a third party can check, and the obvious next step in one click.</li>
+<li><b>Track</b>One small set of plain status words, with money and fulfillment reported separately, and "unknown" said out loud.</li>
+<li><b>Prove</b>Each piece of evidence says who vouches for it. Missing evidence is reported as missing.</li>
 </ol>
 
 <h2>The promises every ILOP provider makes</h2>
 <ul class="promises">
-<li>Nothing is done or charged without the person's explicit yes to the exact total.</li>
-<li>A changed price, document or destination cancels that yes.</li>
-<li>Retrying never charges twice.</li>
-<li>Nobody says "sent" or "done" before the fulfillment partner has accepted the job.</li>
-<li>Every answer says plainly whether money was taken and whether the work happened.</li>
+<li>Nothing is done or charged without the person's own approval of the exact document, destination, service and total. An agent saying "the user approved" is never enough.</li>
+<li>A changed price, document or destination cancels that approval.</li>
+<li>Retrying never charges twice or creates a second job. If the outcome is unknown, the provider says so and checks before anything is tried again.</li>
+<li>Nobody says "sent" before the partner accepted the job, or "mailed" before the carrier has it.</li>
+<li>Every answer says separately whether money was taken and whether the work happened.</li>
+<li>Status is never unlocked by an order number alone.</li>
 </ul>
 
 <h2>How an agent finds a provider</h2>
 <p>Each provider publishes <code>/.well-known/ilop.json</code>, naming its actions, its MCP endpoint, the tools for each step and the kinds of proof it issues.</p>
 <pre>{
-  "ilop_version": "0.1",
+  "ilop_version": "0.2",
   "provider": { "name": "Piloxa", "url": "https://piloxa.com" },
-  "mcp": { "url": "https://piloxa.com/mcp", "auth": "none" },
-  "actions": [{ "id": "mail.certified.us",
-    "proof_types": ["carrier_tracking", "return_receipt", "document_hash"] }],
+  "mcp": { "url": "https://piloxa.com/mcp", "auth": "none",
+           "protocol_versions": ["2025-06-18", "2025-03-26", "2024-11-05"] },
+  "actions": [{ "id": "mail.certified.us", "approval_mode": "provider_hosted",
+    "proof_types": ["document_hash", "carrier_tracking", "return_receipt", "certificate_of_mailing"] }],
   "tools": { "quote": "quote_certified_letter",
+             "check": "check_certified_letter",
              "prepare": "prepare_certified_letter",
              "authorize": "authorize_certified_letter",
-             "status": "get_certified_letter_status" }
+             "status": "get_certified_letter_status" },
+  "features": { "in_chat_authorization": { "listed": true,
+                "verified_issuing_hosts": [] } },
+  "capability_revision": "…"
 }</pre>
+<p>Abbreviated. The file is generated from the provider's live MCP tool list, so it cannot advertise a tool or protocol version the server does not serve. <code>verified_issuing_hosts: []</code> is the honest part: the in-chat payment tool is served, but no chat host has yet been seen issuing the payment credential it needs. Full example: <a href="https://github.com/Piloxa/ilop/blob/main/examples/piloxa-manifest.json">examples/piloxa-manifest.json</a>. Schema: <a href="https://github.com/Piloxa/ilop/blob/main/schema/ilop-manifest.schema.json">ilop-manifest.schema.json</a>. The 0.1 sample is kept at <a href="https://github.com/Piloxa/ilop/blob/main/examples/legacy-v0.1-manifest.json">legacy-v0.1-manifest.json</a>.</p>
+
+<h2>What every answer carries</h2>
+<pre>"structuredContent": { …provider's own fields…,
+  "ilop": { "ilop_state": "ACCEPTED", "state_meaning": "The printer accepted the job; USPS has not scanned it yet.",
+            "charged": true, "executed": false,
+            "payment_status": "CAPTURED", "fulfillment_status": "PARTNER_ACCEPTED",
+            "events": [ … ], "evidence": [ … ] } }</pre>
+
+<h2>Test a provider</h2>
+<pre>git clone https://github.com/Piloxa/ilop && cd ilop && npm ci
+npm test                                          # 117 offline cases, no network
+node conformance/runner/run.mjs --live https://provider.example   # read-only: never prepares or pays</pre>
+<p>Building one? Start with the <a href="https://github.com/Piloxa/ilop/blob/main/docs/provider-quickstart.md">provider quickstart</a> and the <a href="https://github.com/Piloxa/ilop/blob/main/reference-adapter/courier-adapter.mjs">courier adapter</a>, a 130-line example for a service that has nothing to do with mail.</p>
 
 <h2>What ILOP is not</h2>
 <p>ILOP does not define payments. It works with whichever agent-payment method the assistant supports, or with a provider-hosted approval page. It standardizes the part payment protocols leave out: carrying out a real-world service and proving it happened.</p>
@@ -81,7 +102,7 @@ footer{margin-top:56px;color:var(--muted);font-size:.9rem;border-top:1px solid v
 <h2>Implementations</h2>
 <table>
 <tr><th>Provider</th><th>Action</th><th>Status</th></tr>
-<tr><td><a href="https://piloxa.com">Piloxa</a></td><td>USPS Certified Mail, U.S.</td><td>Reference implementation</td></tr>
+<tr><td><a href="https://piloxa.com">Piloxa</a></td><td>USPS Certified Mail, U.S.</td><td>Reference implementation. ILOP 0.2 live since 17 November 2026: <a href="https://piloxa.com/.well-known/ilop.json">discovery file</a>. <a href="https://github.com/Piloxa/ilop/blob/main/docs/piloxa-reference-mapping.md">What is live</a>.</td></tr>
 </table>
 <p>Building one? <a href="https://github.com/Piloxa/ilop/issues">Open an issue</a> to be listed.</p>
 

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ilop.ai/schema/ilop-result.schema.json",
+  "title": "ILOP v0.2 result: an order envelope, or a refusal in which nothing happened",
+  "anyOf": [
+    { "$ref": "ilop-order.schema.json" },
+    {
+      "title": "Refusal",
+      "type": "object",
+      "required": ["ilop_version", "operation", "charged", "executed", "error"],
+      "properties": {
+        "ilop_version": { "$ref": "ilop-common.schema.json#/$defs/version" },
+        "operation": { "$ref": "ilop-common.schema.json#/$defs/operation" },
+        "charged": { "const": false },
+        "executed": { "const": false },
+        "error": { "allOf": [{ "$ref": "ilop-error.schema.json" }, { "properties": { "code": { "not": { "const": "OUTCOME_UNCERTAIN" } } } }] }
+      }
+    }
+  ]
+}
