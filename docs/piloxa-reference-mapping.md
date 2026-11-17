@@ -2,7 +2,7 @@
 
 Piloxa (piloxa.com, USPS Certified Mail, operated by Decentralized Publishing LLC) is the reference implementation. This page says what it does, and how sure we are.
 
-**Status on 2026-11-17: implemented and tested in a branch of the Piloxa repository; not yet deployed to production.** Until the owner releases it, `https://piloxa.com/.well-known/ilop.json` returns 404 and tool results carry no `ilop` object. This line will change when it is live.
+**Status: LIVE on piloxa.com since 2026-11-17 17:08 UTC** (Piloxa PR #191; all eight deployed files sha-matched to `main`). `https://piloxa.com/.well-known/ilop.json` answers 200 and validates against the v0.2 schema, and live tool results carry the `ilop` object. MCP 2026-07-28 is built but switched off, so the live manifest does not list it.
 
 ## Tools
 
